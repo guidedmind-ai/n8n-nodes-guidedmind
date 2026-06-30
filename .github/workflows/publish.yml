@@ -1,0 +1,41 @@
+# Publish to npm (with provenance)
+#
+# n8n verified community nodes (from May 1st 2026) must be published via
+# GitHub Actions with an npm provenance statement. This workflow uses npm
+# Trusted Publishers (OIDC) — no NPM_TOKEN secret is stored in the repo.
+#
+# One-time setup on npmjs.com -> the package's Settings ->
+#   Publish access -> Trusted Publishers -> Add a publisher:
+#     Provider:          GitHub Actions
+#     Repository owner:  guidedmind-ai
+#     Repository name:   n8n-nodes-guidedmind
+#     Workflow filename: publish.yml
+#
+# Trigger: push a version tag (e.g. v0.1.0). `npm run release` creates and
+# pushes the tag for you.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write # required for npm provenance / OIDC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm run build
+      - run: npm run lint
+      # npm >= 11.5 publishes with provenance via OIDC; no NODE_AUTH_TOKEN needed
+      # when a Trusted Publisher is configured for this repo + workflow.
+      - run: npm install -g npm@latest
+      - run: npm publish --provenance --access public
