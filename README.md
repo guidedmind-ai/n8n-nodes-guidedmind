@@ -1,10 +1,8 @@
 # n8n-nodes-guidedmind
 
-A native **n8n community node** for [GuidedMind](https://guidedmind.ai) — the no-code Context Platform. Adds a first-class **GuidedMind** node to your palette so you can query your knowledge base, ingest documents, and read/write agent memory without hand-wiring HTTP Request nodes.
+A native **n8n community node** for [GuidedMind](https://guidedmind.ai) — the no-code Context Platform. Query your knowledge base, ingest documents, and manage agent memory directly from n8n workflows.
 
-This is a real installable node package (an npm module), not a workflow template. Once installed it appears in the nodes panel like Slack or Notion, can be used as a tool by the AI Agent node, and carries its own credentials.
-
-## What's inside
+## What it does
 
 One node, **GuidedMind**, with three resources:
 
@@ -14,29 +12,56 @@ One node, **GuidedMind**, with three resources:
 | **Document** | Upload · Upload and Process |
 | **Memory** | Add Short Messages · Get Short Messages · Store Long Memory · Search Long Memory |
 
-Two credential types, because GuidedMind uses two separate keys:
+The node can also be used as a **tool by the AI Agent** node — enabling AI agents to search your knowledge base or query memory without extra configuration.
+
+## Install
+
+### Via n8n Community Nodes panel (recommended)
+
+1. In n8n, go to **Settings → Community Nodes → Install**
+2. Search for `n8n-nodes-guidedmind`
+3. Click **Install** and restart n8n if prompted
+
+### Manual install (self-hosted)
+
+```bash
+# In your n8n custom nodes directory (e.g. ~/.n8n/custom)
+npm install n8n-nodes-guidedmind
+```
+
+Then restart n8n. To enable AI Agent tool usage, set:
+```bash
+N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+```
+
+## Configure credentials
+
+GuidedMind uses two separate API keys:
 
 | Credential | Header | Key prefix | Used by |
 | :--- | :--- | :--- | :--- |
-| **GuidedMind RAG API** | `X-API-Key` | `rk_` | RAG + Document resources |
-| **GuidedMind Memory API** | `X-Memory-Api-Key` | `mk_` | Memory resource |
+| **GuidedMind RAG API** | `X-API-Key` | `rk_` | RAG + Document |
+| **GuidedMind Memory API** | `X-Memory-Api-Key` | `mk_` | Memory |
 
-Both let you override the **Base URL** for self-hosted / staging instances (default `https://api.guidedmind.ai`).
+1. In n8n, go to **Settings → Credentials**
+2. Create a **GuidedMind RAG API** credential with your `rk_` key
+3. Create a **GuidedMind Memory API** credential with your `mk_` key
+4. Both credentials let you override the **Base URL** for self-hosted or staging instances (default: `https://api.guidedmind.ai`)
 
-The node sets `usableAsTool: true`, so an **AI Agent** can call `GuidedMind: Search` or `GuidedMind: Search Long Memory` directly as tools — no MCP plumbing required for users who prefer a native node.
+## Use in workflows
 
-## Install (end users)
+Add the **GuidedMind** node to your workflow, select a resource (Knowledge Base, Document, or Memory), choose an operation, and attach the corresponding credential.
 
-**Verified install (once approved):** in n8n, go to **Settings → Community Nodes → Install**, search for `n8n-nodes-guidedmind`, and install.
+For AI Agent workflows, the node is marked `usableAsTool: true` — simply add it as a tool on your AI Agent node and it will automatically call `Search` or `Search Long Memory` when relevant.
 
-**Manual install (self-hosted, before verification):**
-```bash
-# in your n8n custom nodes directory (e.g. ~/.n8n/custom)
-npm install n8n-nodes-guidedmind
-```
-Then restart n8n. Set `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true` if you want to use the node as an AI Agent tool.
+---
 
-## Build & test locally (developers)
+## For developers
+
+<details>
+<summary>Click to expand build & publish instructions</summary>
+
+### Build & test locally
 
 Requires Node.js >= 20.15.
 
@@ -44,45 +69,27 @@ Requires Node.js >= 20.15.
 git clone https://github.com/guidedmind-ai/n8n-nodes-guidedmind.git
 cd n8n-nodes-guidedmind
 npm install
-npm run build      # tsc + copies the SVG icon into dist/
-npm run lint       # eslint-plugin-n8n-nodes-base — must pass for verification
+npm run build   # tsc + copies SVG icon into dist/
+npm run lint    # must pass for verification
 ```
 
-To run the node inside a live n8n while developing:
+To run inside a live n8n while developing:
 ```bash
-npm run dev        # tsc --watch
-# then link it into n8n's custom dir, or use the n8n-node CLI:
-#   npx n8n-node dev
+npm run dev     # tsc --watch
 ```
 
-The compiled output in `dist/` is what ships; the `n8n` attribute in `package.json` points n8n at `dist/credentials/*.js` and `dist/nodes/GuidedMind/GuidedMind.node.js`.
+### Publish to npm
 
-## Publish & push to GitHub
+Publishing is done via **GitHub Actions with npm provenance** (required for n8n verified nodes from May 2026):
 
-```bash
-# create the repo on github.com/guidedmind-ai first, then:
-git init
-git add .
-git commit -m "Initial GuidedMind community node (RAG + Document + Memory)"
-git branch -M main
-git remote add origin https://github.com/guidedmind-ai/n8n-nodes-guidedmind.git
-git push -u origin main
-```
+1. Configure a [Trusted Publisher](https://www.npmjs.com/settings/guidedmind/packages/n8n-nodes-guidedmind/pubkeys) on npm (GitHub Actions → `guidedmind-ai/n8n-nodes-guidedmind` → `publish.yml`)
+2. Run `npm run release` — this bumps the version, tags, and pushes
+3. The `v*` tag triggers `.github/workflows/publish.yml`, which builds, lints, and publishes with provenance
 
-Publishing to npm is done **through GitHub Actions with provenance** (see `.github/workflows/publish.yml`), which n8n **requires** for verified nodes submitted from May 1st 2026 onward:
+### Submit for verification
 
-1. Add an `NPM_TOKEN` secret (an npm automation token) to the GitHub repo.
-2. Cut a GitHub **Release** (tag e.g. `v0.1.0`). The workflow builds, lints, and runs `npm publish --provenance --access public`.
-3. Do **not** `npm publish` from your laptop for verified releases — provenance must come from the Action.
+1. Confirm `npm run lint` passes and the package follows the [verified-node guidelines](https://docs.n8n.io/integrations/creating-nodes/build/reference/verification-guidelines/)
+2. Publish via the provenance workflow above
+3. Sign in to the [n8n Creator Portal](https://n8n.io/creator-portal) and submit `n8n-nodes-guidedmind` for review
 
-## Submit for verification (nodes panel listing)
-
-1. Confirm `npm run lint` passes and the package follows the [verified-node guidelines](https://docs.n8n.io/integrations/creating-nodes/build/reference/verification-guidelines/): name starts with `n8n-nodes-`, includes the `n8n-community-node-package` keyword, **zero runtime dependencies**, English-only UI, no env/filesystem access.
-2. Publish via the provenance workflow above.
-3. Sign in to the **n8n Creator Portal** and submit `n8n-nodes-guidedmind` for review.
-
-## Notes / to confirm before release
-
-- **Document endpoint paths** (`/api/v1/documents/upload`, `/upload-and-process`) are inferred from the MCP tool names (`upload_document`, `upload_and_process`); confirm the exact REST routes against the GuidedMind API reference, since the public docs document these as MCP tools rather than REST routes. The RAG search route (`/api/v1/mcp/rag/search`) matches the existing n8n template. RAG search and memory routes are taken from the published API docs.
-- The author email/repo URL in `package.json` are placeholders — set the real ones before publishing.
-- Linting uses `eslint-plugin-n8n-nodes-base`; run `npm run lint:fix` to auto-resolve most style/convention findings.
+</details>
