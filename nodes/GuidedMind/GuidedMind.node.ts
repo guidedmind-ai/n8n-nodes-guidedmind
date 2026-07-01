@@ -70,8 +70,7 @@ export class GuidedMind implements INodeType {
 						routing: {
 							request: {
 								method: 'POST',
-								baseURL: '={{ $credentials.baseUrl }}',
-								url: '/rag/search',
+								url: '={{ $credentials.baseUrl }}/rag/search',
 							},
 						},
 					},
@@ -143,8 +142,7 @@ export class GuidedMind implements INodeType {
 						routing: {
 							request: {
 								method: 'POST',
-								baseURL: '={{ $credentials.baseUrl }}',
-								url: '/api/v1/documents/upload',
+								url: '={{ $credentials.baseUrl }}/api/v1/documents/upload',
 							},
 						},
 					},
@@ -156,8 +154,7 @@ export class GuidedMind implements INodeType {
 						routing: {
 							request: {
 								method: 'POST',
-								baseURL: '={{ $credentials.baseUrl }}',
-								url: '/api/v1/documents/upload-and-process',
+								url: '={{ $credentials.baseUrl }}/api/v1/documents/upload-and-process',
 							},
 						},
 					},
