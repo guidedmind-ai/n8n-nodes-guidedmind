@@ -20,16 +20,20 @@ export class GuidedMind implements INodeType {
 		credentials: [
 			{
 				name: 'guidedMindRagApi',
-				required: true,
+				required: false,
 				displayOptions: {
-					show: { authentication: ['guidedMindRagApi'] },
+					show: {
+						authentication: ['guidedMindRagApi'],
+					},
 				},
 			},
 			{
 				name: 'guidedMindMemoryApi',
-				required: true,
+				required: false,
 				displayOptions: {
-					show: { authentication: ['guidedMindMemoryApi'] },
+					show: {
+						authentication: ['guidedMindMemoryApi'],
+					},
 				},
 			},
 		],
