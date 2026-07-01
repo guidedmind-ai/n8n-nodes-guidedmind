@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-guidedmind",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "n8n community node for GuidedMind — RAG knowledge base, document ingestion, and short/long agent memory.",
   "keywords": [
     "n8n-community-node-package",
@@ -39,8 +39,7 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/GuidedMindRagApi.credentials.js",
-      "dist/credentials/GuidedMindMemoryApi.credentials.js"
+      "dist/credentials/GuidedMindApi.credentials.js"
     ],
     "nodes": [
       "dist/nodes/GuidedMind/GuidedMind.node.js"

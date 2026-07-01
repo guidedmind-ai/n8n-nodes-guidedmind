@@ -19,34 +19,11 @@ export class GuidedMind implements INodeType {
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
 			{
-				name: 'guidedMindRagApi',
-				required: false,
-				displayOptions: {
-					show: {
-						authentication: ['guidedMindRagApi'],
-					},
-				},
-			},
-			{
-				name: 'guidedMindMemoryApi',
-				required: false,
-				displayOptions: {
-					show: {
-						authentication: ['guidedMindMemoryApi'],
-					},
-				},
+				name: 'guidedMindApi',
+				required: true,
 			},
 		],
 		properties: [
-			// ----------------------------------------
-			//          Authentication (hidden)
-			// ----------------------------------------
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'hidden',
-				default: '={{ $parameter["resource"] === "memory" ? "guidedMindMemoryApi" : "guidedMindRagApi" }}',
-			},
 			// ----------------------------------------
 			//             Resource
 			// ----------------------------------------
